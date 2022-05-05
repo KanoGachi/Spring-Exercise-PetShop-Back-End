@@ -1,10 +1,8 @@
 package com.petshop.cms.core.aop;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,10 +18,9 @@ import org.springframework.stereotype.Component;
 public class ConsoleLogAop {
     /**
      * 定义一个切面表达式，并使用一个方法签名对其命名
-     * 使用下面的切面表达式 "petShopCmsPointCut()" ，
-     * 会使通知对 com.petshop.cms包下的所有类的所有方法生效
+     * 以下切面表达式对应BaseService接口的所有方法
      **/
-    @Pointcut("execution(* com.petshop.cms.*.*(..))")
+    @Pointcut("execution(* com.petshop.cms..BaseService.*(..))")
     public void petShopCmsPointCut(){};
 
     /**
@@ -31,8 +28,8 @@ public class ConsoleLogAop {
      **/
     @Before(value = "petShopCmsPointCut()")
     public void BeforeLog(JoinPoint joinPoint){
-        System.out.println("前置通知：模拟进行控制台日志输出");
-        System.out.println("目标类是："+joinPoint.getTarget());
+        System.out.print("前置通知：模拟进行控制台日志输出。");
+        System.out.print("目标类是："+joinPoint.getTarget());
         System.out.println("被植入增强处理的目标方法为："+
                 joinPoint.getSignature().getName()
                 );
@@ -43,6 +40,41 @@ public class ConsoleLogAop {
      **/
     @AfterReturning(value = "petShopCmsPointCut()")
     public void AfterReturningLog(JoinPoint joinPoint){
+        System.out.print("后置通知：模拟进行控制台输出。");
+        System.out.print("目标类是："+joinPoint.getTarget());
+        System.out.println("被植入增强处理的目标方法为："+
+                joinPoint.getSignature().getName()
+        );
+    }
 
+    /**
+     * 环绕通知
+     * ProceedingJoinPoint是JoinPoint的子接口，表示可以执行目标方法
+     * 1.返回值必须为Object类型
+     * 2.必须接收一个ProceedingJoinPoint类型的参数
+     * 3.必须throws Throwable
+     **/
+    @Around(value = "petShopCmsPointCut()")
+    public Object AroundLog(ProceedingJoinPoint proceedingJoinPoint)throws Throwable{
+        System.out.println("环绕通知：模拟开启事务...");
+        Object obj = proceedingJoinPoint.proceed();
+        System.out.println("环绕通知：模拟关闭事务...");
+        return obj;
+    }
+
+    /**
+     * 异常通知
+     **/
+    @AfterThrowing(value = "petShopCmsPointCut()",throwing = "e")
+    public void AfterThrowingLog(JoinPoint joinPoint,Throwable e){
+        System.out.println("异常通知：出错了，"+e.getMessage());
+    }
+
+    /**
+     * 最终通知
+     **/
+    @After(value = "petShopCmsPointCut()")
+    public void AfterLog(JoinPoint joinPoint){
+        System.out.println("最终通知：模拟结束后释放变量。");
     }
 }
