@@ -9,7 +9,7 @@ package com.petshop.cms.modules.entity.base;
  * @Version: 1.0
  */
 public class BasePet {
-    private int id;
+    private Integer id;
     private String name;
     private String type;
     private String buyTime;

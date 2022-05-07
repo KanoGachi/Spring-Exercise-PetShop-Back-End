@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.petshop.cms.modules.dao.BaseDao">
+
+    <sql id="petStockCols">
+        PetStock.id AS id,
+        PetStock.name AS name,
+        PetStock.type AS type,
+        PetStock.buy_time AS buyTime,
+    </sql>
+
+    <sql id="getStockWhere">
+
+        <where>
+            <if test="id != null">
+                and PetStock.id = #{id}
+            </if>
+            <if test="name != null">
+                and PetStock.name = #{name}
+            </if>
+            <if test="type != null">
+                and PetStock.type = #{type}
+            </if>
+            <if test="buyTime != null">
+                and PetStock.buy_time = #{buyTime}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getStock"
+            parameterType="com.petshop.cms.modules.entity.base.BasePet"
+            resultType="Integer">
+            SELECT count(*)
+            FROM tb_pet_stock PetStock
+            <include refid="getStockWhere"/> ;
+    </select>
+</mapper>
